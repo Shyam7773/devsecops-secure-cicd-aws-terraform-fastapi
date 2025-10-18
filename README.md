@@ -1,78 +1,210 @@
-# Secure CI/CD Demo (DevSecOps)
+# 🚀 Secure CI/CD Demo – DevSecOps on AWS
 
-A compact DevSecOps showcase aligned to Salesforce's Associate DevSecOps Engineer role.
+**A fully automated DevSecOps pipeline showcasing secure software delivery using GitHub Actions, Terraform, Docker, FastAPI, and AWS.**
 
-**Highlights**
-- FastAPI service with `/health`, `/predict`, and Prometheus `/metrics`
-- Dockerized app with non-root user
-- GitHub Actions CI: Black, Flake8, Pytest (coverage), Bandit (code security), Trivy (image CVEs)
-- Terraform IaC for AWS: VPC, public subnet, SG, IAM role, Ubuntu EC2 with user data that runs a container
-- Sample Prometheus scrape config for metrics
+This project demonstrates how a modern engineering team can deliver **secure, observable, and reproducible infrastructure** — from code to cloud — while keeping automation, testing, and security checks at the heart of the workflow.
 
-## Repo Structure
-```
-app/                # FastAPI app and runtime requirements
-tests/              # pytest tests
-infra/              # Terraform (VPC, EC2, SG, IAM, user_data)
-.github/workflows/  # CI pipeline
-Dockerfile
-README.md
-prometheus.yml
-```
+---
 
-## Quickstart (Local)
+## 🌍 Overview
 
+| Component | Technology | Purpose |
+|------------|-------------|----------|
+| Application | **FastAPI** | Lightweight REST API with `/predict`, `/health`, `/metrics` |
+| Infrastructure | **Terraform (AWS)** | VPC, EC2, IAM, and security groups |
+| Containerization | **Docker** | Non-root image, reproducible build |
+| CI/CD | **GitHub Actions** | Automated linting, testing, scanning, and IaC validation |
+| Security | **Bandit, Trivy, tfsec** | Multi-layer scanning for vulnerabilities and misconfigurations |
+| Monitoring | **Prometheus / Grafana** | Observability via `/metrics` endpoint |
+
+---
+
+## 🧱 Architecture Diagram
+
+    ┌──────────────────────┐
+    │   Developer Commit   │
+    └──────────┬───────────┘
+               │
+       GitHub Actions CI/CD
+ ┌─────────────┼────────────────┐
+ │  Lint & Test (pytest, flake8)│
+ │  Security Scan (Bandit)      │
+ │  Image Scan (Trivy)          │
+ │  IaC Scan (tfsec)            │
+ └─────────────┼────────────────┘
+               │
+         Terraform Apply
+               │
+       ┌───────▼────────┐
+       │ AWS Environment │
+       │  EC2 + Docker   │
+       └───────┬────────┘
+               │
+          ┌────▼────┐
+          │ FastAPI │
+          │ Service │
+          └────┬────┘
+               │
+       ┌───────▼────────┐
+       │ Prometheus/Graf │
+       │ Metrics & Logs  │
+       └────────────────┘
+
+
+---
+
+## 🧰 Features
+
+✅ **FastAPI Microservice** – `/health`, `/predict`, and `/metrics` endpoints  
+✅ **Dockerized Deployment** – lightweight, non-root image  
+✅ **GitHub Actions CI/CD** – automated linting, testing, security scanning  
+✅ **Security by Default** – Bandit, Trivy, and tfsec integration  
+✅ **Infrastructure as Code** – Terraform-managed AWS setup  
+✅ **Observability Built-In** – Prometheus-compatible metrics  
+✅ **Clean Documentation & Testing** – pytest, coverage, and reproducible results
+
+---
+
+## 📂 Repository Structure
+
+secure-ci-cd-demo/
+├── app/ # FastAPI application code
+│ ├── main.py # Core app with /predict, /health, /metrics
+│ └── requirements.txt # Dependencies
+│
+├── tests/ # Unit tests (pytest)
+│ └── test_app.py
+│
+├── infra/ # Terraform IaC
+│ ├── main.tf # AWS infra definition (VPC, EC2, IAM)
+│ ├── variables.tf # Configurable parameters
+│ ├── outputs.tf # Terraform outputs
+│ └── user_data.sh # Bootstraps EC2 to run Docker container
+│
+├── .github/workflows/ # CI/CD automation
+│ └── ci.yml # Full GitHub Actions pipeline
+│
+├── Dockerfile # Secure container build (non-root)
+├── prometheus.yml # Prometheus scraping config
+├── .gitignore # Ignore Python & Terraform temp files
+├── .dockerignore # Optimize Docker context
+└── README.md # This documentation
+
+
+---
+## ⚙️ Local Setup
+
+### 1️⃣ Clone the repository
 ```bash
-# 1) Build & run
+git clone https://github.com/<your-username>/secure-ci-cd-demo.git
+cd secure-ci-cd-demo
+```
+
+### 2️⃣ Build and run locally
+```bash
 docker build -t devsecops-demo:local .
 docker run -p 8080:80 devsecops-demo:local
-
-# 2) Try endpoints
+```
+### 3️⃣ Test endpoints
+```bash
 curl http://localhost:8080/health
-curl -X POST http://localhost:8080/predict -H 'Content-Type: application/json' -d '{"text":"great product"}'
+curl -X POST http://localhost:8080/predict -H "Content-Type: application/json" -d '{"text": "great work!"}'
 curl http://localhost:8080/metrics
 ```
 
-## CI Pipeline
+### 🧪 CI/CD Pipeline Overview
+| Stage            | Tool      | Description                     |
+| ---------------- | --------- | ------------------------------- |
+| **Format**       | Black     | Ensures PEP8 formatting         |
+| **Lint**         | Flake8    | Static analysis for Python code |
+| **Test**         | Pytest    | Unit tests with coverage        |
+| **Code Scan**    | Bandit    | Security scan for Python        |
+| **Image Scan**   | Trivy     | CVE scan for Docker image       |
+| **IaC Scan**     | tfsec     | Terraform security audit        |
+| **Validate IaC** | Terraform | Syntax & policy validation      |
 
-On every push/PR to `main`:
-- **Black**: formatting check
-- **Flake8**: linting
-- **Pytest**: unit tests + coverage
-- **Bandit**: Python security scan
-- **Trivy**: container image vulnerability scan
-- **Terraform**: fmt, init (no backend), validate
-- **tfsec**: IaC static analysis (soft-fail by default)
+Every push or pull request triggers this workflow automatically.
 
-> Make `tfsec` blocking by setting `soft_fail: false` in `.github/workflows/ci.yml`.
+### ☁️ Terraform Deployment (AWS)
+Prerequisites
 
-## Terraform (AWS)
+AWS CLI configured
 
-Prereqs: AWS account and credentials. Default region `eu-west-1` (Ireland).
+Terraform >= 1.5.0 installed
 
+IAM user/role with basic EC2 + VPC privileges
+
+Steps
 ```bash
 cd infra
-terraform init        # use -backend=false for demo
-terraform plan -var="container_image=devsecops-demo:local"
+terraform init -backend=false
+terraform plan -var="container_image=nginxdemos/hello"
 terraform apply -auto-approve -var="container_image=nginxdemos/hello"
 ```
 
-Outputs include the EC2 public IP/DNS. Visit `http://<public_ip>/health`.
-To run your own app image, push it to a registry (e.g. Docker Hub/ECR) and set `-var="container_image=<your_image>"`.
+### 🔒 Security Highlights
+| Layer                      | Tool                 | What It Does                            |
+| -------------------------- | -------------------- | --------------------------------------- |
+| **Static Analysis**        | Bandit               | Detects insecure code patterns          |
+| **Container Image**        | Trivy                | Scans OS packages and dependencies      |
+| **Infrastructure as Code** | tfsec                | Flags insecure Terraform configurations |
+| **Runtime**                | Non-root Docker user | Minimizes privilege escalation risk     |
+| **Secrets Management**     | GitHub Secrets       | Keeps credentials out of code           |
 
-## Monitoring
 
-- App exposes Prometheus metrics at `/metrics`.
-- Use `prometheus.yml` as a starter and point targets to the EC2 public IP: `['<EC2_IP>:80']`.
-- Optional: import into Grafana for quick visualization.
+###📈 Monitoring & Observability
 
-## Security Notes
+App exposes Prometheus metrics via /metrics
 
-- Use GitHub Secrets for any credentials (never commit secrets).
-- IAM is least-privilege for demo (CloudWatch + ECR pulls). Tighten further as needed.
-- Container runs as a **non-root** user in Docker.
-- All scans run in CI to prevent deploying insecure builds.
+Default prometheus.yml scrapes every 15s:
+```bash
+scrape_configs:
+  - job_name: 'fastapi-app'
+    static_configs:
+      - targets: ['<EC2_IP>:80']
+```
+Optional Grafana integration for dashboarding request counts and latency
 
-## Why This Fits DevSecOps
+###📘 Example Output
 
-This repo demonstrates: CI/CD automation, security gates (SAST + image scan), reproducible IaC, observability, and secure defaults—exactly what a DevSecOps team needs for reliable, secure delivery.
+GET /health
+```bash
+{"status": "healthy"}
+```
+POST /predict
+```bash
+{"prediction": 1}
+```
+
+### 🧩 Tools Used
+| Category      | Tool                 |
+| ------------- | -------------------- |
+| Language      | Python 3.11          |
+| Framework     | FastAPI              |
+| Cloud         | AWS                  |
+| IaC           | Terraform            |
+| CI/CD         | GitHub Actions       |
+| Security      | Bandit, Trivy, tfsec |
+| Observability | Prometheus, Grafana  |
+| Testing       | Pytest               |
+| Linting       | Flake8, Black        |
+
+
+### 🏆 Why This Project Matters
+
+This repository demonstrates real-world DevSecOps excellence:
+
+✅ Infrastructure as Code (Terraform)
+✅ Secure CI/CD pipelines (GitHub Actions)
+✅ Continuous Testing & Scanning
+✅ Container Hardening
+✅ Observability from Day One
+
+It’s built to reflect Salesforce’s DevSecOps engineering philosophy — secure, scalable, and automated from commit to cloud.
+
+## 🧠 Author
+
+Shyam Pratap Singh Rathore
+📍 Dublin, Ireland
+🎓 MSc Data & Computational Science, University College Dublin
+🔗 LinkedIn : https://www.linkedin.com/in/spsr2001
