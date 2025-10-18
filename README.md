@@ -20,37 +20,19 @@ This project demonstrates how a modern engineering team can deliver **secure, ob
 ---
 
 ## 🧱 Architecture Diagram
-
-    ┌──────────────────────┐
-    │   Developer Commit   │
-    └──────────┬───────────┘
-               │
-       GitHub Actions CI/CD
- ┌─────────────┼────────────────┐
- │  Lint & Test (pytest, flake8)│
- │  Security Scan (Bandit)      │
- │  Image Scan (Trivy)          │
- │  IaC Scan (tfsec)            │
- └─────────────┼────────────────┘
-               │
-         Terraform Apply
-               │
-       ┌───────▼────────┐
-       │ AWS Environment │
-       │  EC2 + Docker   │
-       └───────┬────────┘
-               │
-          ┌────▼────┐
-          │ FastAPI │
-          │ Service │
-          └────┬────┘
-               │
-       ┌───────▼────────┐
-       │ Prometheus/Graf │
-       │ Metrics & Logs  │
-       └────────────────┘
-
-
+```mermaid
+flowchart TD
+    A[Developer Commit] --> B[GitHub Actions CI/CD]
+    B --> C[Lint & Test (pytest, flake8)]
+    B --> D[Security Scan (Bandit)]
+    B --> E[Image Scan (Trivy)]
+    B --> F[IaC Scan (tfsec)]
+    B --> G[Terraform Apply]
+    G --> H[AWS Environment]
+    H --> I[EC2 + Docker]
+    I --> J[FastAPI Service]
+    J --> K[Prometheus/Grafana - Metrics & Logs]
+```
 ---
 
 ## 🧰 Features
