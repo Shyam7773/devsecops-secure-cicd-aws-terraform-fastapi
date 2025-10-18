@@ -50,7 +50,7 @@ flowchart TD
 ---
 
 ## 📂 Repository Structure
-
+```bash
 secure-ci-cd-demo/
 ├── app/ # FastAPI application code
 │ ├── main.py # Core app with /predict, /health, /metrics
@@ -73,7 +73,7 @@ secure-ci-cd-demo/
 ├── .gitignore # Ignore Python & Terraform temp files
 ├── .dockerignore # Optimize Docker context
 └── README.md # This documentation
-
+```
 
 ---
 ## ⚙️ Local Setup
