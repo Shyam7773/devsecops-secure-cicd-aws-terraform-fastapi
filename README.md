@@ -82,8 +82,8 @@ secure-ci-cd-demo/
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone https://github.com/<your-username>/secure-ci-cd-demo.git
-cd secure-ci-cd-demo
+git clone https://github.com/Shyam7773/devsecops-secure-cicd-aws-terraform-fastapi.git
+cd devsecops-secure-cicd-aws-terraform-fastapi
 ```
 
 ### 2️⃣ Build and run locally
@@ -138,7 +138,7 @@ terraform apply -auto-approve -var="container_image=nginxdemos/hello"
 | **Secrets Management**     | GitHub Secrets       | Keeps credentials out of code           |
 
 
-###📈 Monitoring & Observability
+### 📈 Monitoring & Observability
 
 App exposes Prometheus metrics via /metrics
 
@@ -151,7 +151,7 @@ scrape_configs:
 ```
 Optional Grafana integration for dashboarding request counts and latency
 
-###📘 Example Output
+### 📘 Example Output
 
 GET /health
 ```bash
