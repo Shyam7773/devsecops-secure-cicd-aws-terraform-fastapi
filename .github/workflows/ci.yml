@@ -9,6 +9,8 @@ on:
 jobs:
   build-test-scan:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}  # so 'from app.main import app' works
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,13 +19,14 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
 
       - name: Install app & dev dependencies
-          run: |
-            python -m pip install --upgrade pip
-            pip install -r app/requirements.txt
-            pip install -r requirements-dev.txt
-    
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r app/requirements.txt
+          pip install -r requirements-dev.txt
+
       - name: Format check (Black)
         run: black --check .
 
@@ -31,7 +34,7 @@ jobs:
         run: flake8 . --max-line-length=100
 
       - name: Tests (Pytest)
-        run: pytest --cov=app
+        run: pytest --cov=app --cov-report=term-missing
 
       - name: Security scan (Bandit)
         run: bandit -r app -ll -ii
