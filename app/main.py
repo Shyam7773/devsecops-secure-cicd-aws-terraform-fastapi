@@ -1,7 +1,14 @@
 from fastapi import FastAPI, Request
+from fastapi.responses import Response
 from pydantic import BaseModel
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import (
+    Counter,
+    Histogram,
+    generate_latest,
+    CONTENT_TYPE_LATEST,
+)
 import time
+
 
 app = FastAPI(title="DevSecOps Demo", version="1.0.0")
 
@@ -17,9 +24,11 @@ REQUEST_LATENCY = Histogram(
     ["endpoint"],
 )
 
+
 class PredictIn(BaseModel):
     text: str | None = None
     value: float | None = None
+
 
 @app.middleware("http")
 async def prometheus_middleware(request: Request, call_next):
@@ -29,13 +38,17 @@ async def prometheus_middleware(request: Request, call_next):
     endpoint = request.url.path
     REQUEST_LATENCY.labels(endpoint=endpoint).observe(elapsed)
     REQUEST_COUNT.labels(
-        method=request.method, endpoint=endpoint, status_code=str(response.status_code)
+        method=request.method,
+        endpoint=endpoint,
+        status_code=str(response.status_code),
     ).inc()
     return response
+
 
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+
 
 @app.post("/predict")
 def predict(payload: PredictIn):
@@ -47,10 +60,8 @@ def predict(payload: PredictIn):
         pred = 1 if any(k in text for k in ["good", "great", "excellent"]) else 0
     return {"prediction": pred}
 
+
 @app.get("/metrics")
 def metrics():
     data = generate_latest()
     return Response(content=data, media_type=CONTENT_TYPE_LATEST)
-
-# Ensure Response is imported last to avoid circular reference with metrics
-from fastapi.responses import Response  # noqa: E402
