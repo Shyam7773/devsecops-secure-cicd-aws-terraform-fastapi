@@ -1,6 +1,5 @@
 # 🚀 Secure CI/CD Demo – DevSecOps on AWS
 [![CI](https://github.com/Shyam7773/devsecops-secure-cicd-aws-terraform-fastapi/actions/workflows/ci.yml/badge.svg)](https://github.com/Shyam7773/devsecops-secure-cicd-aws-terraform-fastapi/actions/workflows/ci.yml)
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 **A fully automated DevSecOps pipeline showcasing secure software delivery using GitHub Actions, Terraform, Docker, FastAPI, and AWS.**
